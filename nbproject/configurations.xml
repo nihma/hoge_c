@@ -4,9 +4,11 @@
     <logicalFolder name="SourceFiles" displayName="ソースファイル" projectFiles="true">
       <itemPath>exception.c</itemPath>
       <itemPath>main.c</itemPath>
+      <itemPath>var.c</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles" displayName="ヘッダーファイル" projectFiles="true">
       <itemPath>exception.h</itemPath>
+      <itemPath>var.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles" displayName="リソースファイル" projectFiles="true">
     </logicalFolder>
