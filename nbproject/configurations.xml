@@ -2,9 +2,11 @@
 <configurationDescriptor version="80">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="SourceFiles" displayName="ソースファイル" projectFiles="true">
+      <itemPath>exception.c</itemPath>
       <itemPath>main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles" displayName="ヘッダーファイル" projectFiles="true">
+      <itemPath>exception.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles" displayName="リソースファイル" projectFiles="true">
     </logicalFolder>
