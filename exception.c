@@ -25,14 +25,10 @@ static int             e_num   = 0;  // 例外要素数
 
 jmp_buf *exception_begin()
 {
-  e_num++;
-  if (e_num == 1) return &(e_stack.e->buf);  // 1回目の呼び出しは静的確保済み
-  
+  if (e_num == 0) goto END;  // 1回目の呼び出しは静的確保済み
+
   EXCEPTION_STACK *e_stack_prev = malloc(sizeof(EXCEPTION_STACK));
-  if (e_stack_prev == NULL) {
-    e_num--;  // 今回のスタートは無かったことにする
-    exception_throw(NULL);  // TODO: メモリエラー例外
-  }
+  if (e_stack_prev == NULL) goto ERROR;
     
   e_stack_prev->e    = e_stack.e;
   e_stack_prev->prev = e_stack.prev;
@@ -41,12 +37,16 @@ jmp_buf *exception_begin()
   if (e_stack.e == NULL) {
     e_stack.e = e_stack_prev->e;
     free(e_stack_prev);
-    e_num--;  // 今回のスタートは無かったことにする
-    exception_throw(NULL);  // TODO: メモリエラー例外
+    goto ERROR;
   }
   e_stack.prev = e_stack_prev;
 
+END:
+  e_num++;
   return &(e_stack.e->buf);
+
+ERROR:
+  exception_throw(NULL);  // TODO: メモリエラー例外
 }
 
 void exception_end()
