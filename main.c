@@ -8,8 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "exception.h"
+#include "var.h"
 
 void sample_exception();
+void sample_var();
 
 /*
  * 
@@ -19,6 +21,7 @@ int main(int argc, char** argv)
   printf("Hello World!\n");
 
   sample_exception();
+  sample_var();
 
   return (EXIT_SUCCESS);
 }
@@ -78,4 +81,18 @@ void exception_sub2()
     THROW(t);
   }
   printf("sub2 end\n");        /* 表示されない */
+}
+
+void sample_var()
+{
+  VAR(int) aa =  VAR_NEW(int)(malloc(sizeof(int)), free);
+  if (aa == NULL) exit(-1);
+
+  VAR(int) bb = aa->clone(aa);
+  *(VAR_PTR(aa)) = 105;
+
+  aa->end(aa);  /* まだ開放されない */
+
+  printf("%d\n", *(VAR_PTR(bb)));
+  bb->end(bb); /* ここで開放 */
 }
