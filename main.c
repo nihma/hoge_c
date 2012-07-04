@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "exception.h"
 #include "var.h"
 
@@ -85,7 +86,7 @@ void exception_sub2()
 
 void sample_var()
 {
-  VAR(int) aa =  VAR_NEW(int)(malloc(sizeof(int)), free);
+  VAR(int) aa =  VAR_NEW_SIMPLE(int)();
   if (aa == NULL) exit(-1);
 
   VAR(int) bb = aa->clone(aa);
@@ -95,4 +96,11 @@ void sample_var()
 
   printf("%d\n", *(VAR_PTR(bb)));
   bb->end(bb); /* ここで開放 */
+
+  VAR(char) cc = VAR_NEW_ARRAY_SIMPLE(char)(10);
+  if (cc == NULL) exit(-1);
+  
+  strncpy(VAR_PTR(cc), "hogehoge", 8);
+  printf("%s\n", VAR_PTR(cc));
+  cc->end(cc);
 }

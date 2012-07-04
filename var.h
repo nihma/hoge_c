@@ -31,6 +31,8 @@ Var Var_new(void *ptr, void (*destructor)(void *ptr));
 
 #define VAR(TYPE) Var##TYPE
 #define VAR_NEW(TYPE) Var##TYPE##_new
+#define VAR_NEW_SIMPLE(TYPE) Var##TYPE##_new_simple
+#define VAR_NEW_ARRAY_SIMPLE(TYPE) Var##TYPE##_new_array_simple
 
 #define DECLARE_VAR_TYPE(TYPE) \
 typedef struct var_##TYPE* VAR(TYPE); \
@@ -69,6 +71,12 @@ static VAR(TYPE) VAR_NEW(TYPE)(TYPE *ptr, void (*destructor)(void *ptr)) { \
   v->end   = Var##TYPE##_end; \
   v->ptr   = Var##TYPE##_ptr; \
   return v; \
+} \
+static VAR(TYPE) VAR_NEW_SIMPLE(TYPE)() { \
+  return VAR_NEW(TYPE)(malloc(sizeof(TYPE)), free); \
+} \
+static VAR(TYPE) VAR_NEW_ARRAY_SIMPLE(TYPE)(unsigned int num) { \
+  return VAR_NEW(TYPE)(malloc(sizeof(TYPE) * num), free); \
 }
 
 #define DECLARE_VAR(TYPE) \
