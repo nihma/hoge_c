@@ -15,55 +15,55 @@ struct var_private {
   void         (*destructor)(void *ptr);
 };
 
-static Var  clone(Var v);
-static void end(Var* pv);
-static void *ptr_get(Var v);
+static Var  *clone(Var *pv);
+static void end(Var **ppv);
+static void *ptr_get(Var *pv);
 
-Var Var_new(void *ptr, void (*destructor)(void *ptr))
+Var *Var_new(void *ptr, void (*destructor)(void *ptr))
 {
   if (ptr == NULL) return NULL;
 
-  Var v = malloc(sizeof(struct var));
-  if (v == NULL) return NULL;
+  Var *pv = malloc(sizeof(struct var));
+  if (pv == NULL) return NULL;
   
-  v->vp = malloc(sizeof(struct var_private));
-  if (v->vp == NULL) {
-    free(v);
+  pv->vp = malloc(sizeof(struct var_private));
+  if (pv->vp == NULL) {
+    free(pv);
     return NULL;
   }
   
-  v->vp->count      = 1;
-  v->vp->ptr        = ptr;
-  v->vp->destructor = destructor;
+  pv->vp->count      = 1;
+  pv->vp->ptr        = ptr;
+  pv->vp->destructor = destructor;
   
-  v->clone = clone;
-  v->end   = end;
-  v->ptr   = ptr_get;
+  pv->clone = clone;
+  pv->end   = end;
+  pv->ptr   = ptr_get;
 
-  return v;
+  return pv;
 }
 
-static Var clone(Var v)
+static Var *clone(Var *pv)
 {
-  v->vp->count++;
-  return v;
+  pv->vp->count++;
+  return pv;
 }
 
-static void end(Var *pv)
+static void end(Var **ppv)
 {
-  if (*pv == NULL) return;
+  if (*ppv == NULL) return;
 
-  (*pv)->vp->count--;
-  if ((*pv)->vp->count > 0) return;
+  (*ppv)->vp->count--;
+  if ((*ppv)->vp->count > 0) return;
 
-  (*pv)->vp->destructor((*pv)->vp->ptr);
-  free((*pv)->vp);
-  free(*pv);
-  *pv = NULL;
+  (*ppv)->vp->destructor((*ppv)->vp->ptr);
+  free((*ppv)->vp);
+  free(*ppv);
+  *ppv = NULL;
 }
 
-static void* ptr_get(Var v)
+static void* ptr_get(Var *pv)
 {
-  return v->vp->ptr;
+  return pv->vp->ptr;
 }
 

@@ -18,14 +18,14 @@ extern "C" {
 /* 参照カウンタ */  
 
 typedef struct var_private* VarPrivate;
-typedef struct var * Var;
+typedef struct var Var;
 struct var {
   VarPrivate vp;
-  Var        (*clone)(Var);
-  void       (*end)(Var*);
-  void       *(*ptr)(Var);
+  Var        *(*clone)(Var *);
+  void       (*end)(Var **);
+  void       *(*ptr)(Var *);
 };
-Var Var_new(void *ptr, void (*destructor)(void *ptr));
+Var *Var_new(void *ptr, void (*destructor)(void *ptr));
 
 /* タイプセーフなvar */
 
@@ -37,7 +37,7 @@ Var Var_new(void *ptr, void (*destructor)(void *ptr));
 #define DECLARE_VAR_TYPE(TYPE) \
 typedef struct var_##TYPE VAR(TYPE); \
 struct var_##TYPE { \
-  Var         org; \
+  Var         *pv; \
   VAR(TYPE)   *(*clone)(VAR(TYPE) *); \
   void        (*end)(VAR(TYPE) *); \
   TYPE        *(*ptr)(VAR(TYPE) *); \
@@ -47,23 +47,21 @@ struct var_##TYPE { \
 
 #define DECLARE_VAR_NEW(TYPE) \
 static VAR(TYPE) *Var##TYPE##_clone(VAR(TYPE) *pv) { \
-  pv->org = pv->org->clone(pv->org); \
+  pv->pv = pv->pv->clone(pv->pv); \
   return pv; \
 } \
 static void Var##TYPE##_end(VAR(TYPE) *pv) { \
-  pv->org->end(&(pv->org)); \
-  if (pv->org == NULL) { \
-    free(pv); \
-  } \
+  pv->pv->end(&(pv->pv)); \
+  if (pv->pv == NULL) free(pv); \
 } \
 static TYPE *Var##TYPE##_ptr(VAR(TYPE) *pv) { \
-  return (TYPE *) pv->org->ptr(pv->org); \
+  return (TYPE *) pv->pv->ptr(pv->pv); \
 } \
 static VAR(TYPE) *VAR_NEW(TYPE)(TYPE *ptr, void (*destructor)(void *ptr)) { \
   VAR(TYPE) *pv = malloc(sizeof(struct var_##TYPE)); \
   if (pv == NULL) return pv; \
-  pv->org = Var_new(ptr, (void (*)(void *))destructor); \
-  if (pv->org == NULL) { \
+  pv->pv = Var_new(ptr, (void (*)(void *))destructor); \
+  if (pv->pv == NULL) { \
     free(pv); \
     return NULL; \
   } \
