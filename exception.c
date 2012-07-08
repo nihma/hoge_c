@@ -69,7 +69,10 @@ void exception_end()
 
 void exception_throw(void *value)
 {
-  if (e_num == 0) return;
+  if (e_num == 0) {
+    /* not found try/catch */
+    exit(1);
+  }
 
   e_stack.e->value = value;
   longjmp(e_stack.e->buf, 1);
