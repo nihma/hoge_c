@@ -38,9 +38,9 @@ Var Var_new(void *ptr, void (*destructor)(void *ptr));
 typedef struct var_##TYPE VAR(TYPE); \
 struct var_##TYPE { \
   Var         org; \
-  VAR(TYPE)*  (*clone)(VAR(TYPE) *); \
+  VAR(TYPE)   *(*clone)(VAR(TYPE) *); \
   void        (*end)(VAR(TYPE) *); \
-  TYPE *      (*ptr)(VAR(TYPE) *); \
+  TYPE        *(*ptr)(VAR(TYPE) *); \
 };
 
 #define VAR_PTR(pv) pv->ptr(pv)
