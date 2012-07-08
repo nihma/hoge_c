@@ -35,9 +35,9 @@ void sample_exception()
   TRY_BEGIN {
     exception_sub1();
   }
-  CATCH(int, a) {
-    printf("catch1 %d\n", *a);
-    free(a);
+  CATCH(e) {
+    printf("catch1 %s\n", exception_message(e));
+    e->end(e);
   }
   FINALLY {
     printf("finally1\n");       /* 表示される */
@@ -53,21 +53,16 @@ void exception_sub1()
   TRY_BEGIN {  /* 例外の入れ子 */
     exception_sub2();
   }
-  CATCH(int, a) {
-    printf("catch2 %d\n", *a);
-    free(a);
+  CATCH(e) {
+    printf("catch2 %s\n", exception_message(e));
+    e->end(e);
   }
   FINALLY {
     printf("finally2\n");       /* 表示される */
   }
   TRY_END
 
-  {
-    int *t = malloc(sizeof(int));
-    if (t == NULL) exit(1);
-    *t = 100;
-    THROW(t);
-  }
+  THROW(expeption_new("100"));
   printf("sub1 end\n");        /* 表示されない */
 }
 
@@ -75,12 +70,7 @@ void exception_sub1()
 void exception_sub2()
 {
   printf("sub2 start\n");      /* 表示される */
-  {
-    int *t = malloc(sizeof(int));
-    if (t == NULL) exit(1);
-    *t = 200;
-    THROW(t);
-  }
+  THROW(expeption_new("200"));
   printf("sub2 end\n");        /* 表示されない */
 }
 
