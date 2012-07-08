@@ -35,47 +35,47 @@ Var Var_new(void *ptr, void (*destructor)(void *ptr));
 #define VAR_NEW_ARRAY_SIMPLE(TYPE) Var##TYPE##_new_array_simple
 
 #define DECLARE_VAR_TYPE(TYPE) \
-typedef struct var_##TYPE* VAR(TYPE); \
+typedef struct var_##TYPE VAR(TYPE); \
 struct var_##TYPE { \
-  Var        org; \
-  VAR(TYPE)  (*clone)(VAR(TYPE)); \
-  void       (*end)(VAR(TYPE)); \
-  TYPE *     (*ptr)(VAR(TYPE)); \
+  Var         org; \
+  VAR(TYPE)*  (*clone)(VAR(TYPE) *); \
+  void        (*end)(VAR(TYPE) *); \
+  TYPE *      (*ptr)(VAR(TYPE) *); \
 };
 
-#define VAR_PTR(v) v->ptr(v)
+#define VAR_PTR(pv) pv->ptr(pv)
 
 #define DECLARE_VAR_NEW(TYPE) \
-static VAR(TYPE) Var##TYPE##_clone(VAR(TYPE) v) { \
-  v->org = v->org->clone(v->org); \
-  return v; \
+static VAR(TYPE) *Var##TYPE##_clone(VAR(TYPE) *pv) { \
+  pv->org = pv->org->clone(pv->org); \
+  return pv; \
 } \
-static void Var##TYPE##_end(VAR(TYPE) v) { \
-  v->org->end(&(v->org)); \
-  if (v->org == NULL) { \
-    free(v); \
+static void Var##TYPE##_end(VAR(TYPE) *pv) { \
+  pv->org->end(&(pv->org)); \
+  if (pv->org == NULL) { \
+    free(pv); \
   } \
 } \
-static TYPE *Var##TYPE##_ptr(VAR(TYPE) v) { \
-  return (TYPE *) v->org->ptr(v->org); \
+static TYPE *Var##TYPE##_ptr(VAR(TYPE) *pv) { \
+  return (TYPE *) pv->org->ptr(pv->org); \
 } \
-static VAR(TYPE) VAR_NEW(TYPE)(TYPE *ptr, void (*destructor)(void *ptr)) { \
-  VAR(TYPE) v = malloc(sizeof(struct var_##TYPE)); \
-  if (v == NULL) return v; \
-  v->org = Var_new(ptr, (void (*)(void *))destructor); \
-  if (v->org == NULL) { \
-    free(v); \
+static VAR(TYPE) *VAR_NEW(TYPE)(TYPE *ptr, void (*destructor)(void *ptr)) { \
+  VAR(TYPE) *pv = malloc(sizeof(struct var_##TYPE)); \
+  if (pv == NULL) return pv; \
+  pv->org = Var_new(ptr, (void (*)(void *))destructor); \
+  if (pv->org == NULL) { \
+    free(pv); \
     return NULL; \
   } \
-  v->clone = Var##TYPE##_clone; \
-  v->end   = Var##TYPE##_end; \
-  v->ptr   = Var##TYPE##_ptr; \
-  return v; \
+  pv->clone = Var##TYPE##_clone; \
+  pv->end   = Var##TYPE##_end; \
+  pv->ptr   = Var##TYPE##_ptr; \
+  return pv; \
 } \
-static VAR(TYPE) VAR_NEW_SIMPLE(TYPE)() { \
+static VAR(TYPE) *VAR_NEW_SIMPLE(TYPE)() { \
   return VAR_NEW(TYPE)(malloc(sizeof(TYPE)), free); \
 } \
-static VAR(TYPE) VAR_NEW_ARRAY_SIMPLE(TYPE)(unsigned int num) { \
+static VAR(TYPE) *VAR_NEW_ARRAY_SIMPLE(TYPE)(unsigned int num) { \
   return VAR_NEW(TYPE)(malloc(sizeof(TYPE) * num), free); \
 }
 

@@ -86,10 +86,10 @@ void exception_sub2()
 
 void sample_var()
 {
-  VAR(int) aa =  VAR_NEW_SIMPLE(int)();
+  VAR(int) *aa =  VAR_NEW_SIMPLE(int)();
   if (aa == NULL) exit(-1);
 
-  VAR(int) bb = aa->clone(aa);
+  VAR(int) *bb = aa->clone(aa);
   *(VAR_PTR(aa)) = 105;
 
   aa->end(aa);  /* まだ開放されない */
@@ -97,7 +97,7 @@ void sample_var()
   printf("%d\n", *(VAR_PTR(bb)));
   bb->end(bb); /* ここで開放 */
 
-  VAR(char) cc = VAR_NEW_ARRAY_SIMPLE(char)(10);
+  VAR(char) *cc = VAR_NEW_ARRAY_SIMPLE(char)(10);
   if (cc == NULL) exit(-1);
   
   strncpy(VAR_PTR(cc), "hogehoge", 8);
