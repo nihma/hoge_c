@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct var_private {
+struct var_local {
   unsigned int count;
   void         *ptr;
   void         (*destructor)(void *ptr);
@@ -26,15 +26,15 @@ Var *Var_new(void *ptr, void (*destructor)(void *ptr))
   Var *pv = malloc(sizeof(struct var));
   if (pv == NULL) return NULL;
   
-  pv->vp = malloc(sizeof(struct var_private));
-  if (pv->vp == NULL) {
+  pv->pl = malloc(sizeof(struct var_local));
+  if (pv->pl == NULL) {
     free(pv);
     return NULL;
   }
   
-  pv->vp->count      = 1;
-  pv->vp->ptr        = ptr;
-  pv->vp->destructor = destructor;
+  pv->pl->count      = 1;
+  pv->pl->ptr        = ptr;
+  pv->pl->destructor = destructor;
   
   pv->clone = clone;
   pv->end   = end;
@@ -45,7 +45,7 @@ Var *Var_new(void *ptr, void (*destructor)(void *ptr))
 
 static Var *clone(Var *pv)
 {
-  pv->vp->count++;
+  pv->pl->count++;
   return pv;
 }
 
@@ -53,17 +53,17 @@ static void end(Var **ppv)
 {
   if (*ppv == NULL) return;
 
-  (*ppv)->vp->count--;
-  if ((*ppv)->vp->count > 0) return;
+  (*ppv)->pl->count--;
+  if ((*ppv)->pl->count > 0) return;
 
-  (*ppv)->vp->destructor((*ppv)->vp->ptr);
-  free((*ppv)->vp);
+  (*ppv)->pl->destructor((*ppv)->pl->ptr);
+  free((*ppv)->pl);
   free(*ppv);
   *ppv = NULL;
 }
 
 static void* ptr_get(Var *pv)
 {
-  return pv->vp->ptr;
+  return pv->pl->ptr;
 }
 

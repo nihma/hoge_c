@@ -17,10 +17,10 @@ extern "C" {
   
 /* 参照カウンタ */  
 
-typedef struct var_private* VarPrivate;
+typedef struct var_local VarLocal;
 typedef struct var Var;
 struct var {
-  VarPrivate vp;
+  VarLocal   *pl;
   Var        *(*clone)(Var *);
   void       (*end)(Var **);
   void       *(*ptr)(Var *);
