@@ -24,11 +24,15 @@ Var *Var_new(void *ptr, void (*destructor)(void *ptr))
   if (ptr == NULL) return NULL;
 
   Var *pv = malloc(sizeof(struct var));
-  if (pv == NULL) return NULL;
-  
+  if (pv == NULL) {
+    destructor(ptr);
+    return NULL;
+  }
+
   pv->pl = malloc(sizeof(struct var_local));
   if (pv->pl == NULL) {
     free(pv);
+    destructor(ptr);
     return NULL;
   }
   
