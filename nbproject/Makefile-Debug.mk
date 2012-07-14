@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/list.o \
 	${OBJECTDIR}/exception.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/var.o
@@ -62,6 +63,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/hoge_c.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/hoge_c ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/list.o: list.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/list.o list.c
 
 ${OBJECTDIR}/exception.o: exception.c 
 	${MKDIR} -p ${OBJECTDIR}
